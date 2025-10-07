@@ -28,21 +28,6 @@ const RoomSchema = new Schema({
         type: Number,
         required: true
     },
-    // tenants: [{
-    //     tenantId: {
-    //         type: mongoose.Schema.Types.ObjectId,
-    //         ref: 'tenants'
-    //     },
-    //     bedNo: {
-    //         type: Number,
-    //         required: true,
-    //     },
-    //     move_in_date: {
-    //         type: Date,
-    //         required: true
-    //     }
-    // }]
-
 
 }, {
     timestamps: true

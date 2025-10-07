@@ -8,6 +8,8 @@ const port = process.env.Backend_port || 8000
 const frontend_url = process.env.Frontend_url
 
 
+const UserRoute = require('./routes/UserRoute')
+
 
 
 app.use(express.json())
@@ -38,3 +40,6 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`App listening on port ${port}`)
 })
+
+
+app.use('/api', UserRoute)
