@@ -6,8 +6,8 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 const authMiddleware = (req, res, next) => {
     try {
-        const accessToken = req.cookies.accessToken;
-        const refreshToken = req.cookies.refreshToken;
+        const accessToken = req.cookies.accesstoken;
+        const refreshToken = req.cookies.refreshtoken;
 
         if (!accessToken) {
             return res.status(401).json({ success: false, message: 'Unauthorized: No access token' });

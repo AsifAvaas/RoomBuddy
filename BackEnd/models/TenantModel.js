@@ -20,7 +20,9 @@ const RoomSchema = new Schema({
     move_in_date: {
         type: Date,
         required: true
-    }
+    },
+    isActive: { type: Boolean, default: true },
+    next_due_date: { type: Date },
 }, {
     timestamps: true
 })

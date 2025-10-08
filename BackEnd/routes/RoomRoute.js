@@ -10,9 +10,18 @@ router.post('/addRoom', authMiddleware, adminMiddleware, async (req, res) => {
         if (existingRoom) {
             return res.status(400).json({ error: 'Room number already exists on this floor' });
         }
+        const occupancy_type = req.body.occupancy_type;
         const newRoom = new Room(req.body)
+        if (occupancy_type === 'Single') {
+            newRoom.capacity = 1;
+        } else if (occupancy_type === 'Triple') {
+            newRoom.capacity = 3;
+        } else if (occupancy_type === 'Shared') {
+            newRoom.capacity = 6;
+        }
+        newRoom.available_slots = newRoom.capacity;
         await newRoom.save()
-        res.status(201).json(newRoom)
+        res.status(201).json({ success: true, newRoom })
 
     } catch (error) {
         res.status(500).json({ error: error.message })
