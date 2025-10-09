@@ -10,7 +10,7 @@ const RentPaymentSchema = new Schema({
     paymentMethod: { type: String, enum: ['cash', 'razorpay', 'none'], default: 'none' },
     status: { type: String, enum: ['pending', 'paid'], default: 'pending' },
     paymentDate: { type: Date },
-    razorpayPaymentId: { type: String, default: null },
+    PaymentId: { type: String, default: null },
 }, {
     timestamps: true
 });

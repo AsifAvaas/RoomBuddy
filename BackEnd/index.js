@@ -11,6 +11,7 @@ const frontend_url = process.env.Frontend_url
 const UserRoute = require('./routes/UserRoute')
 const RoomRoute = require('./routes/RoomRoute')
 const TenantRentRoute = require('./routes/TenantRentRoute')
+const RentRoute = require('./routes/RentRoute')
 
 
 
@@ -47,3 +48,4 @@ app.listen(port, () => {
 app.use('/api', UserRoute)
 app.use('/api', RoomRoute)
 app.use('/api', TenantRentRoute)
+app.use('/api', RentRoute)
