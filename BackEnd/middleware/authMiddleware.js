@@ -6,8 +6,8 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 const authMiddleware = (req, res, next) => {
     try {
-        const accessToken = req.cookies.accesstoken;
-        const refreshToken = req.cookies.refreshtoken;
+        const accessToken = req.cookies.accessToken;
+        const refreshToken = req.cookies.refreshToken;
 
         if (!accessToken) {
             return res.status(401).json({ success: false, message: 'Unauthorized: No access token' });
@@ -28,7 +28,8 @@ const authMiddleware = (req, res, next) => {
                             // ❌ Both tokens invalid → logout user
                             res.clearCookie('accessToken');
                             res.clearCookie('refreshToken');
-                            return res.status(401).json({ success: false, message: 'Session expired. Please log in again.' });
+                            // return res.status(401).json({ success: false, message: 'Session expired. Please log in again.' });
+                            return res.redirect(`${process.env.Frontend_url}/login`);
                         }
 
                         // 🔄 Refresh token valid → issue new access token
@@ -38,7 +39,7 @@ const authMiddleware = (req, res, next) => {
                             httpOnly: true,
                             secure: isProduction,
                             sameSite: isProduction ? 'none' : 'lax',
-                            maxAge: 15 * 60 * 1000
+                            maxAge: 365 * 24 * 60 * 60 * 1000
                         });
 
                         // attach userId for downstream routes

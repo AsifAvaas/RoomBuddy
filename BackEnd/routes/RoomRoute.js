@@ -3,6 +3,7 @@ const router = express.Router()
 const Room = require("../models/RoomModel")
 const authMiddleware = require('../middleware/authMiddleware')
 const adminMiddleware = require('../middleware/adminMiddleware')
+const Tenant = require('../models/TenantModel')
 
 router.post('/addRoom', authMiddleware, adminMiddleware, async (req, res) => {
     try {
@@ -88,8 +89,31 @@ router.delete('/deleteRoom/:id', authMiddleware, adminMiddleware, async (req, re
     }
 });
 
+router.get('/:roomId/tenants', async (req, res) => {
+    try {
+        const { roomId } = req.params;
+        const tenants = await Tenant.find({ roomId })
+            .populate('userId', 'username email phone profilePic') // include only the fields you need
+            .populate('roomId'); // or { roomNumber: roomId }
+        res.status(200).json({ success: true, tenants });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
-
+router.get('/myRoom', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id
+        console.log(userId)
+        const tenant = await Tenant.find({ userId }).populate('roomId')
+        if (!tenant) {
+            return res.status(404).json({ message: 'No room assigned' });
+        }
+        res.status(200).json({ success: true, tenant });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+})
 
 
 

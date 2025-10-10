@@ -90,11 +90,11 @@ router.get('/myPendingRents', authMiddleware, async (req, res) => {
 });
 
 
-
+// Admin Route for all the pending rents
 router.get('/pendingRents', authMiddleware, adminMiddleware, async (req, res) => {
     try {
-        const pendingRents = await Rent.find({ status: 'pending' })
-            .populate('tenantId') // You can specify fields like 'bedNo move_in_date' if you want
+        const pendingRents = await Rent.find()
+            .populate('tenantId')
             .sort({ createdAt: -1 });
 
         if (!pendingRents.length) {

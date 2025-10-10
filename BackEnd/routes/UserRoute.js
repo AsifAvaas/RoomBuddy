@@ -107,16 +107,17 @@ router.post('/login', async (req, res) => {
             httpOnly: true,
             secure: isProduction,
             sameSite: isProduction ? 'none' : 'lax',
-            maxAge: 15 * 60 * 1000
+            maxAge: 365 * 24 * 60 * 60 * 1000
         });
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: isProduction,
             sameSite: isProduction ? 'none' : 'lax',
-            maxAge: 30 * 24 * 60 * 60 * 1000
+            maxAge: 365 * 24 * 60 * 60 * 1000
         });
+        const isAdmin = user.isAdmin
 
-        res.status(200).json({ success: true, message: "Logged in successfully" });
+        res.status(200).json({ success: true, message: "Logged in successfully", isAdmin });
     } catch (error) {
         //console.error(error);
         res.status(500).json({ success: false, error: "Server error" });
@@ -139,7 +140,7 @@ router.post('/logout', async (req, res) => {
 
         return res.status(200).json({ success: true, message: 'Logged out successfully' });
     } catch (error) {
-        return res.status(200).json({ success: false, message: 'Loggiong out unsuccessful' });
+        return res.status(500).json({ success: false, message: 'Loggiong out unsuccessful' });
     }
 
 })
