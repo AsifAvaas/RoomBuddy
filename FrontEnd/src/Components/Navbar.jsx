@@ -127,8 +127,28 @@ export default function Navbar() {
                     >
                       My Room
                     </a>
+                    <a
+                      href="/rents"
+                      className={`px-3 py-2 text-sm font-medium ${
+                        currentPath === "/rents"
+                          ? "text-blue-600 border-b-2 border-blue-600"
+                          : "text-gray-700 hover:text-blue-600"
+                      }`}
+                    >
+                      Rents
+                    </a>
                   </>
                 )}
+                <a
+                  href="/profile"
+                  className={`px-3 py-2 text-sm font-medium ${
+                    currentPath === "/profile"
+                      ? "text-blue-600 border-b-2 border-blue-600"
+                      : "text-gray-700 hover:text-blue-600"
+                  }`}
+                >
+                  Profile
+                </a>
                 <button
                   onClick={handleLogout}
                   className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm font-medium"
@@ -212,6 +232,28 @@ export default function Navbar() {
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   My Room
+                </a>
+                <a
+                  href="/rents"
+                  className={`block px-3 py-2 rounded text-base font-medium ${
+                    currentPath === "/rents"
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Rents
+                </a>
+                <a
+                  href="/profile"
+                  className={`block px-3 py-2 rounded text-base font-medium ${
+                    currentPath === "/rents"
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Profile
                 </a>
                 <button
                   onClick={handleLogout}

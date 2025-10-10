@@ -11,11 +11,13 @@ import {
 } from "lucide-react";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
+import { useNavigate } from "react-router-dom";
 
 function MyRoom() {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
   const backendurl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
@@ -351,7 +353,10 @@ function MyRoom() {
                         <button className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg">
                           View Details
                         </button>
-                        <button className="px-4 py-3 border-2 border-slate-300 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 transition-colors">
+                        <button
+                          onClick={() => navigate("/rents")}
+                          className="px-4 py-3 border-2 border-slate-300 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 transition-colors"
+                        >
                           Pay Rent
                         </button>
                       </div>

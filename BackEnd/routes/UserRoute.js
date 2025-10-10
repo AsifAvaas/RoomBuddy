@@ -125,6 +125,46 @@ router.post('/login', async (req, res) => {
 })
 
 
+router.post('/google/login', async (req, res) => {
+    const { name, email, profilePic } = req.body
+    try {
+        let user = await User.findOne({ email: email })
+        if (!user) {
+            user = await new User({
+                username: name,
+                email: email,
+                password: "",
+                profilePic: profilePic,
+                isVerified: true,
+                isAdmin: false
+
+            })
+        }
+        user.save()
+        const { accessToken, refreshToken } = generateTokens(user._id)
+        res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
+            maxAge: 365 * 24 * 60 * 60 * 1000
+        });
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
+            maxAge: 365 * 24 * 60 * 60 * 1000
+        });
+        const isAdmin = user.isAdmin
+
+        res.status(200).json({ success: true, message: "Logged in successfully", isAdmin });
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, error: "Server error" });
+    }
+})
+
+
 router.post('/logout', async (req, res) => {
     try {
         res.cookie('accessToken', '', {

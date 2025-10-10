@@ -303,7 +303,7 @@ function AvailableRooms() {
 
         {/* Booking Modal */}
         {showModal && selectedRoom && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="fixed inset-0 bg-gray-300 bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-fadeIn">
               {/* Modal Header */}
               <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 p-6">

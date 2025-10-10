@@ -10,6 +10,10 @@ import RoomList from "./Pages/Admin/RoomList";
 import Billing from "./Pages/Admin/Billing";
 import AvailableRooms from "./Pages/Users/AvailableRooms";
 import MyRoom from "./Pages/Users/MyRoom";
+import Rents from "./Pages/Users/Rents";
+import PaymentSuccess from "./Pages/Users/PaymentSuccess";
+import PaymentCancel from "./Pages/Users/PaymentCancel";
+import Profile from "./Pages/Profile";
 function App() {
   return (
     <>
@@ -24,6 +28,10 @@ function App() {
         <Route path="/billing" element={<Billing />} />
         <Route path="/available-rooms" element={<AvailableRooms />} />
         <Route path="/my-room" element={<MyRoom />} />
+        <Route path="/rents" element={<Rents />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-cancel" element={<PaymentCancel />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </>
   );

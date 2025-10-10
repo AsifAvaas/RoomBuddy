@@ -12,6 +12,8 @@ const UserRoute = require('./routes/UserRoute')
 const RoomRoute = require('./routes/RoomRoute')
 const TenantRentRoute = require('./routes/TenantRentRoute')
 const RentRoute = require('./routes/RentRoute')
+const ProfileRoute = require('./routes/ProfileRoute')
+const DashboardRoute = require('./routes/DashboardRouter')
 
 
 
@@ -49,3 +51,5 @@ app.use('/api', UserRoute)
 app.use('/api', RoomRoute)
 app.use('/api', TenantRentRoute)
 app.use('/api', RentRoute)
+app.use('/api', ProfileRoute)
+app.use('/api/dashboard', DashboardRoute)
