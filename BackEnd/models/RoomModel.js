@@ -8,7 +8,7 @@ const RoomSchema = new Schema({
         required: true,
     },
     floor: {
-        type: String,
+        type: Number,
         required: true
     },
     capacity: {
@@ -28,21 +28,10 @@ const RoomSchema = new Schema({
         type: Number,
         required: true
     },
-    // tenants: [{
-    //     tenantId: {
-    //         type: mongoose.Schema.Types.ObjectId,
-    //         ref: 'tenants'
-    //     },
-    //     bedNo: {
-    //         type: Number,
-    //         required: true,
-    //     },
-    //     move_in_date: {
-    //         type: Date,
-    //         required: true
-    //     }
-    // }]
-
+    images: {
+        type: [String], // array of image URLs
+        default: []
+    }
 
 }, {
     timestamps: true

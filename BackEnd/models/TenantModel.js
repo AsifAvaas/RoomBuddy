@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const { Schema } = mongoose
 
-const RoomSchema = new Schema({
+const TenantSchema = new Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users',
@@ -20,9 +20,11 @@ const RoomSchema = new Schema({
     move_in_date: {
         type: Date,
         required: true
-    }
+    },
+    isActive: { type: Boolean, default: true },
+    next_due_date: { type: Date },
 }, {
     timestamps: true
 })
 
-module.exports = mongoose.model('tenants', RoomSchema)
+module.exports = mongoose.model('tenants', TenantSchema)

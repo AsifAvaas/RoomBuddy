@@ -8,6 +8,14 @@ const port = process.env.Backend_port || 8000
 const frontend_url = process.env.Frontend_url
 
 
+const UserRoute = require('./routes/UserRoute')
+const RoomRoute = require('./routes/RoomRoute')
+const TenantRentRoute = require('./routes/TenantRentRoute')
+const RentRoute = require('./routes/RentRoute')
+const ProfileRoute = require('./routes/ProfileRoute')
+const DashboardRoute = require('./routes/DashboardRouter')
+require('./utils/rentReminder')
+
 
 
 app.use(express.json())
@@ -38,3 +46,11 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`App listening on port ${port}`)
 })
+
+
+app.use('/api', UserRoute)
+app.use('/api', RoomRoute)
+app.use('/api', TenantRentRoute)
+app.use('/api', RentRoute)
+app.use('/api', ProfileRoute)
+app.use('/api/dashboard', DashboardRoute)
