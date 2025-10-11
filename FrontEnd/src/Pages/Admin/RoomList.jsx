@@ -2,6 +2,11 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../../Components/Navbar";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 function RoomList() {
   const { roomId } = useParams();
@@ -19,9 +24,8 @@ function RoomList() {
         );
         if (res.data.success) {
           setTenants(res.data.tenants);
-          if (res.data.tenants.length > 0) {
-            setRoomInfo(res.data.tenants[0].roomId); // room info populated from backend
-          }
+
+          setRoomInfo(res.data.room); // room info populated from backend
         } else {
           setError("Failed to load tenants");
         }
@@ -70,6 +74,32 @@ function RoomList() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {roomInfo && (
             <div className="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-indigo-100">
+              {/* Room Image Carousel */}
+              {roomInfo.images && roomInfo.images.length > 0 && (
+                <div className="mb-8">
+                  <Swiper
+                    modules={[Navigation, Pagination, Autoplay]}
+                    spaceBetween={20}
+                    slidesPerView={1}
+                    navigation
+                    pagination={{ clickable: true }}
+                    autoplay={{ delay: 3000, disableOnInteraction: false }}
+                    className="rounded-2xl overflow-hidden"
+                  >
+                    {roomInfo.images.map((imgUrl, index) => (
+                      <SwiperSlide key={index}>
+                        <img
+                          src={imgUrl}
+                          alt={`Room ${roomInfo.roomNumber} - ${index + 1}`}
+                          className="w-full h-72 sm:h-96 object-cover rounded-2xl shadow-md"
+                        />
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+                </div>
+              )}
+
+              {/* Room Details Header */}
               <div className="flex items-center gap-3 mb-6">
                 <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-3 shadow-lg">
                   <svg
@@ -91,6 +121,7 @@ function RoomList() {
                 </h2>
               </div>
 
+              {/* Room Info Cards */}
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 hover:shadow-md transition-shadow">
                   <p className="text-gray-500 text-xs font-semibold uppercase tracking-wide mb-1">

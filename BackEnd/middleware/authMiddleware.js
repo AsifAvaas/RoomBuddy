@@ -16,7 +16,7 @@ const authMiddleware = (req, res, next) => {
 
         jwt.verify(accessToken, jswSecret, (err, decoded) => {
             if (err) {
-                // ⏰ Access token expired → try refresh token
+                // Access token expired → try refresh token
                 if (err.name === 'TokenExpiredError') {
                     if (!refreshToken) {
                         return res.status(401).json({ success: false, message: 'Session expired. Please log in again.' });
@@ -50,7 +50,7 @@ const authMiddleware = (req, res, next) => {
                     return res.status(401).json({ success: false, message: 'Invalid token' });
                 }
             } else {
-                // ✅ Access token valid
+                // Access token valid
                 req.user = { id: decoded.userId };
                 next();
             }

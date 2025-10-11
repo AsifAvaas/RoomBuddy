@@ -209,11 +209,21 @@ function Tenants() {
                       <td className="px-6 py-4">
                         <div className="flex items-center">
                           <div className="h-10 w-10 flex-shrink-0">
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
-                              {tenant.userId?.username
-                                ?.charAt(0)
-                                .toUpperCase() || "T"}
-                            </div>
+                            {tenant.userId?.profilePic ? (
+                              <>
+                                <img
+                                  src={tenant.userId?.profilePic}
+                                  alt=""
+                                  className="w-12 h-12 rounded-full object-cover border-2 border-indigo-200 shadow-md"
+                                />
+                              </>
+                            ) : (
+                              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+                                {tenant.userId?.username
+                                  ?.charAt(0)
+                                  .toUpperCase() || "T"}
+                              </div>
+                            )}
                           </div>
                           <div className="ml-4">
                             <div className="font-semibold text-gray-900">

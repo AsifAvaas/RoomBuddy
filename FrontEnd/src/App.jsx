@@ -14,6 +14,8 @@ import Rents from "./Pages/Users/Rents";
 import PaymentSuccess from "./Pages/Users/PaymentSuccess";
 import PaymentCancel from "./Pages/Users/PaymentCancel";
 import Profile from "./Pages/Profile";
+import Roomdetails from "./Pages/Users/Roomdetails";
+import UnavailablePage from "./Pages/UnavailablePage";
 function App() {
   return (
     <>
@@ -32,6 +34,8 @@ function App() {
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-cancel" element={<PaymentCancel />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/roomdetails/:id" element={<Roomdetails />} />
+        <Route path="*" element={<UnavailablePage />} />
       </Routes>
     </>
   );

@@ -10,7 +10,7 @@ const sendEmail = require("../utils/sendMail")
 const isProduction = process.env.NODE_ENV === 'production'
 const verifyEmailTemplate = require('../utils/emailtemplates/verifyEmailTemplate');
 const generateTokens = require('../utils/generateTokens');
-
+const frontend = process.env.Frontend_url
 
 
 
@@ -45,10 +45,17 @@ router.post('/register', body('email', 'Invalid email format').isEmail(),
                 isAdmin: req.body.isAdmin
             })
 
-            const token = await new Token({
+            const token = new Token({
                 userId: user._id,
                 token: crypto.randomBytes(32).toString('hex')
-            }).save()
+            })
+            if (!token) {
+                return res.status(404).json({ success: false, message: "Couldn't create Token" })
+            }
+            console.log("Token created")
+            await token.save()
+
+
             const url = `${backend_url}/api/${user._id}/verify/${token.token}`
 
 
@@ -184,6 +191,31 @@ router.post('/logout', async (req, res) => {
     }
 
 })
+
+
+router.get("/:id/verify/:token", async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.params.id })
+        if (!user) return res.status(400).json({ message: "Invalid Link 1" })
+
+        const token = await Token.findOne({
+            userId: user._id,
+            token: req.params.token
+        })
+        if (!token)
+            return res.status(400).json({ message: "Invalid Link 2" })
+
+        await user.updateOne({ _id: user._id, isVerified: true })
+        await Token.deleteOne({ _id: token._id });
+        res.redirect(`${frontend}/login`)
+
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: "Sevrver Error" })
+    }
+})
+
 
 
 module.exports = router

@@ -28,6 +28,10 @@ const RoomSchema = new Schema({
         type: Number,
         required: true
     },
+    images: {
+        type: [String], // array of image URLs
+        default: []
+    }
 
 }, {
     timestamps: true

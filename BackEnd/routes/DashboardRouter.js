@@ -6,6 +6,7 @@ const Tenant = require('../models/TenantModel');
 const RentPayment = require('../models/RentModel');
 const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
+const RentModel = require('../models/RentModel');
 
 // 🧭 Dashboard Summary
 router.get('/summary', authMiddleware, adminMiddleware, async (req, res) => {
@@ -102,11 +103,16 @@ router.get('/room-breakdown', async (req, res) => {
 router.get('/pending-payments', async (req, res) => {
     try {
         const now = new Date();
-        const tenants = await RentPayment.find({ status: "pending" })
+        const tenants = await RentModel.find({ status: "pending" })
             .populate({
                 path: "tenantId",
-                populate: { path: "roomId", select: "roomNumber floor" }
-            });
+                populate: { path: "userId", select: "username email" }
+            })
+            .populate({
+                path: "tenantId",
+                populate: { path: "roomId", select: "roomNumber floor" },
+            })
+            ;
 
         const dueSoon = tenants.filter(t => {
             const due = t.paymentDate || t.createdAt;
@@ -114,7 +120,7 @@ router.get('/pending-payments', async (req, res) => {
             return diff >= 25; // pending more than ~25 days
         });
 
-        res.json(dueSoon);
+        res.json(tenants);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

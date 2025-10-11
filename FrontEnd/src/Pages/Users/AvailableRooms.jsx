@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
+import { useNavigate } from "react-router-dom";
 
 function AvailableRooms() {
   const [rooms, setRooms] = useState([]);
@@ -24,7 +25,7 @@ function AvailableRooms() {
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingError, setBookingError] = useState(null);
   const [bookingSuccess, setBookingSuccess] = useState(false);
-
+  const navigate = useNavigate();
   const backendurl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
@@ -288,11 +289,18 @@ function AvailableRooms() {
                       </div>
                     </div>
 
-                    <button
+                    {/* <button
                       onClick={() => handleBookRoom(room)}
                       className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
                     >
                       Book Room
+                    </button> */}
+                    <button
+                      // onClick={() => alert("Hello")}
+                      onClick={() => navigate(`/roomdetails/${room._id}`)}
+                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
+                    >
+                      Details
                     </button>
                   </div>
                 </div>

@@ -4,30 +4,61 @@ const Room = require("../models/RoomModel")
 const authMiddleware = require('../middleware/authMiddleware')
 const adminMiddleware = require('../middleware/adminMiddleware')
 const Tenant = require('../models/TenantModel')
+const cloudinary = require('../utils/cloudinary');
+const upload = require('../utils/multer');
 
-router.post('/addRoom', authMiddleware, adminMiddleware, async (req, res) => {
+
+router.post('/addRoom', authMiddleware, adminMiddleware, upload.array('images', 5), async (req, res) => {
     try {
-        const existingRoom = await Room.findOne({ roomNumber: req.body.roomNumber, floor: req.body.floor });
+        const { roomNumber, floor, occupancy_type, rent } = req.body;
+
+        // Prevent duplicate room on same floor
+        const existingRoom = await Room.findOne({ roomNumber, floor });
         if (existingRoom) {
             return res.status(400).json({ error: 'Room number already exists on this floor' });
         }
-        const occupancy_type = req.body.occupancy_type;
-        const newRoom = new Room(req.body)
-        if (occupancy_type === 'Single') {
-            newRoom.capacity = 1;
-        } else if (occupancy_type === 'Triple') {
-            newRoom.capacity = 3;
-        } else if (occupancy_type === 'Shared') {
-            newRoom.capacity = 6;
+
+        // Determine capacity
+        let capacity = 1;
+        if (occupancy_type === 'Triple') capacity = 3;
+        else if (occupancy_type === 'Shared') capacity = 6;
+
+        // Upload images to Cloudinary
+        const uploadedImages = [];
+        if (req.files && req.files.length > 0) {
+            for (const file of req.files) {
+                const result = await cloudinary.uploader.upload(file.path, {
+                    folder: 'room_images',
+                    resource_type: 'image',
+                });
+                uploadedImages.push(result.secure_url);
+            }
         }
-        newRoom.available_slots = newRoom.capacity;
-        await newRoom.save()
-        res.status(201).json({ success: true, newRoom })
+
+        // Create new room
+        const newRoom = new Room({
+            roomNumber,
+            floor,
+            occupancy_type,
+            capacity,
+            available_slots: capacity,
+            rent,
+            images: uploadedImages
+        });
+
+        await newRoom.save();
+
+        res.status(201).json({
+            success: true,
+            message: 'Room added successfully',
+            newRoom
+        });
 
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        console.error(error);
+        res.status(500).json({ error: error.message });
     }
-})
+});
 
 
 router.get('/getAllRooms', authMiddleware, async (req, res) => {
@@ -94,12 +125,35 @@ router.get('/:roomId/tenants', async (req, res) => {
         const { roomId } = req.params;
         const tenants = await Tenant.find({ roomId })
             .populate('userId', 'username email phone profilePic') // include only the fields you need
-            .populate('roomId'); // or { roomNumber: roomId }
-        res.status(200).json({ success: true, tenants });
+
+        const room = await Room.findById(roomId);
+        if (!room) {
+            return res.status(404).json({ message: 'Room not found' });
+        }
+
+        res.status(200).json({ success: true, tenants, room });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
+
+router.get('/room/:roomId', async (req, res) => {
+    try {
+        const { roomId } = req.params;
+        const room = await Room.findById(roomId);
+        if (!room) {
+            return res.status(404).json({ message: 'Room not found' });
+        }
+
+
+
+        res.status(200).json({ success: true, room });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
 
 router.get('/myRoom', authMiddleware, async (req, res) => {
     try {

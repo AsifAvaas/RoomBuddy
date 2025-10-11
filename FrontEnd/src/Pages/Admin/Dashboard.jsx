@@ -128,7 +128,20 @@ const Dashboard = () => {
     pendingPayments,
     recentTenants,
   } = dashboardData;
+  // console.log("Summery: ", summary);
+  console.log("rentStats: ", rentStats);
+  let totalPaid = 0;
+  let totalPending = 0;
 
+  rentStats.forEach((item) => {
+    if (item._id.status === "paid") {
+      totalPaid += item.totalAmount;
+    } else if (item._id.status === "pending") {
+      totalPending += item.totalAmount;
+    }
+  });
+  // console.log("totalPaid: ", totalPaid);
+  // console.log("totalPending: ", totalPending);
   const summaryCards = [
     {
       title: "Total Rooms",
@@ -150,7 +163,7 @@ const Dashboard = () => {
     },
     {
       title: "Available Beds",
-      value: summary?.availableBeds || 0,
+      value: summary?.totalAvailableBeds || 0,
       icon: Bed,
       color: "purple",
       bg: "bg-purple-50",
@@ -159,7 +172,7 @@ const Dashboard = () => {
     },
     {
       title: "Rent Collected",
-      value: `₹${summary?.rentCollected?.toLocaleString() || 0}`,
+      value: `$${totalPaid?.toLocaleString() || 0}`,
       icon: DollarSign,
       color: "emerald",
       bg: "bg-emerald-50",
@@ -169,7 +182,7 @@ const Dashboard = () => {
     },
     {
       title: "Pending Payments",
-      value: `₹${summary?.pendingAmount?.toLocaleString() || 0}`,
+      value: `$${totalPending?.toLocaleString() || 0}`,
       icon: AlertCircle,
       color: "orange",
       bg: "bg-orange-50",
@@ -178,7 +191,7 @@ const Dashboard = () => {
     },
     {
       title: "Recently Vacated",
-      value: summary?.recentlyVacated || 0,
+      value: recentTenants?.recentlyVacated.length || 0,
       icon: UserX,
       color: "red",
       bg: "bg-red-50",
@@ -190,7 +203,7 @@ const Dashboard = () => {
   const occupancyData = occupancy
     ? [
         { name: "Occupied", value: occupancy.occupied, color: "#3b82f6" },
-        { name: "Available", value: occupancy.available, color: "#e5e7eb" },
+        { name: "Available", value: occupancy.available, color: "#b3b4b7" },
       ]
     : [];
 
@@ -202,6 +215,54 @@ const Dashboard = () => {
     };
     return colors[status?.toLowerCase()] || "bg-gray-100 text-gray-800";
   };
+  // 🔹 Format rent data for monthly chart
+  const formatRentData = (rentStats) => {
+    if (!rentStats) return [];
+
+    const grouped = {};
+
+    rentStats.forEach((item) => {
+      const { month, year, status } = item._id;
+      const key = `${month}-${year}`;
+      if (!grouped[key]) {
+        grouped[key] = { month, year, paid: 0, pending: 0 };
+      }
+      grouped[key][status] = item.totalAmount;
+    });
+
+    return Object.values(grouped).map((item) => ({
+      name: `${new Date(item.year, item.month - 1).toLocaleString("default", {
+        month: "short",
+      })} ${item.year}`,
+      paid: item.paid || 0,
+      pending: item.pending || 0,
+    }));
+  };
+
+  // function RentChart({ rentStats }) {
+  //   // Transform data for chart
+  //   const monthlyData = useMemo(() => {
+  //     const grouped = {};
+
+  //     rentStats.forEach((item) => {
+  //       const { month, year, status } = item._id;
+  //       const key = `${month}-${year}`;
+  //       if (!grouped[key]) {
+  //         grouped[key] = { month, year, paid: 0, pending: 0 };
+  //       }
+  //       grouped[key][status] = item.totalAmount;
+  //     });
+
+  //     return Object.values(grouped).map((item) => ({
+  //       name: `${new Date(item.year, item.month - 1).toLocaleString("default", {
+  //         month: "short",
+  //       })} ${item.year}`,
+  //       paid: item.paid || 0,
+  //       pending: item.pending || 0,
+  //     }));
+  //   }, [rentStats]);
+  // }
+  const monthlyData = formatRentData(rentStats);
 
   return (
     <>
@@ -292,12 +353,24 @@ const Dashboard = () => {
                 Monthly Rent Collection
               </h2>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={rentStats || []}>
+                <BarChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="month" stroke="#64748b" />
+                  <XAxis dataKey="name" stroke="#64748b" />
                   <YAxis stroke="#64748b" />
                   <Tooltip />
-                  <Bar dataKey="amount" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+                  <Legend />
+                  <Bar
+                    dataKey="paid"
+                    fill="#22c55e"
+                    name="Paid Rent"
+                    radius={[6, 6, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="pending"
+                    fill="#ef4444"
+                    name="Pending Rent"
+                    radius={[6, 6, 0, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -345,7 +418,7 @@ const Dashboard = () => {
                         {room.floor}
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-slate-900">
-                        {room.roomNo}
+                        {room.roomNumber}
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-600">
                         {room.type}
@@ -360,7 +433,7 @@ const Dashboard = () => {
                         {room.available}
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-900">
-                        ₹{room.rent}
+                        ${room.rent}
                       </td>
                     </tr>
                   ))}
@@ -402,16 +475,16 @@ const Dashboard = () => {
                   {pendingPayments?.map((payment, idx) => (
                     <tr key={idx} className="hover:bg-slate-50 transition">
                       <td className="px-6 py-4 text-sm font-medium text-slate-900">
-                        {payment.tenantName}
+                        {payment.tenantId?.userId?.username}
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-600">
-                        {payment.room}
+                        {payment.tenantId?.roomId?.roomNumber}
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-600">
                         {payment.month}
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-900 font-medium">
-                        ₹{payment.amount}
+                        ${payment.amount}
                       </td>
                       <td className="px-6 py-4">
                         <span
@@ -430,69 +503,6 @@ const Dashboard = () => {
           </div>
 
           {/* Recent Activity */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Recent Move-ins */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                <Users className="w-5 h-5 text-green-600" />
-                Recent Move-ins
-              </h2>
-              <div className="space-y-3">
-                {recentTenants?.moveIns?.map((tenant, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between p-3 bg-green-50 rounded-lg"
-                  >
-                    <div>
-                      <p className="font-medium text-slate-800">
-                        {tenant.name}
-                      </p>
-                      <p className="text-sm text-slate-600">
-                        Room {tenant.room}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs text-slate-500 flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        {tenant.date}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Recently Vacated */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                <UserX className="w-5 h-5 text-red-600" />
-                Recently Vacated
-              </h2>
-              <div className="space-y-3">
-                {recentTenants?.vacated?.map((tenant, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between p-3 bg-red-50 rounded-lg"
-                  >
-                    <div>
-                      <p className="font-medium text-slate-800">
-                        {tenant.name}
-                      </p>
-                      <p className="text-sm text-slate-600">
-                        Room {tenant.room}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs text-slate-500 flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        {tenant.date}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
       </div>
       <Footer />

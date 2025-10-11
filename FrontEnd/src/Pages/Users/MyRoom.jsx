@@ -12,6 +12,7 @@ import {
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function MyRoom() {
   const [rooms, setRooms] = useState([]);
@@ -96,6 +97,26 @@ function MyRoom() {
       </div>
     );
   }
+
+  const handleCancelRoom = async (tenantId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to cancel this room subscription?"
+    );
+    if (!confirmed) return;
+    try {
+      const response = await axios.put(
+        `${backendurl}/api/cancelSubscription/${tenantId}`,
+        {},
+        { withCredentials: true }
+      );
+      if (response.data.success) {
+        alert("Room Subscriiptiion cancelled.");
+        fetchMyRooms();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   if (error) {
     return (
@@ -350,7 +371,18 @@ function MyRoom() {
 
                       {/* Action Buttons */}
                       <div className="flex gap-3 pt-2">
-                        <button className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg">
+                        <button
+                          onClick={() => handleCancelRoom(tenant._id)}
+                          className="px-4 py-3 border-2 border-slate-300 text-red-600 font-semibold rounded-xl hover:bg-slate-50 transition-colors"
+                        >
+                          Cancel Room
+                        </button>
+                        <button
+                          onClick={() =>
+                            navigate(`/roomdetails/${tenant.roomId._id}`)
+                          }
+                          className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg"
+                        >
                           View Details
                         </button>
                         <button
