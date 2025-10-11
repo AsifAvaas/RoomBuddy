@@ -179,8 +179,8 @@ router.put('/onlinePayment/:id', authMiddleware, async (req, res) => {
                 },
             ],
             mode: 'payment',
-            success_url: `${process.env.FRONTEND_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}&rentId=${rent._id}`,
-            cancel_url: `${process.env.FRONTEND_URL}/payment-cancel`,
+            success_url: `${process.env.Frontend_url}/payment-success?session_id={CHECKOUT_SESSION_ID}&rentId=${rent._id}`,
+            cancel_url: `${process.env.Frontend_url}/payment-cancel`,
             metadata: {
                 rentId: rent._id.toString(),
                 tenantId: rent.tenantId._id.toString(),
