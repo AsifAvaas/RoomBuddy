@@ -278,18 +278,13 @@ Contributions are welcome! Please follow these steps:
 
 ---
 
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
 
 ## 👨‍💻 Author
 
-**Your Name**
+**Asif A Khuda**
 
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
+- GitHub: [AsifAvaas](https://github.com/AsifAvaas)
+- Email: asif13.aak@gmail.com
 
 ---
 
