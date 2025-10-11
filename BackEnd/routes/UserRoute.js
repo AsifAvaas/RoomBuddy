@@ -148,9 +148,9 @@ router.post('/google/login', async (req, res) => {
                 isVerified: true,
                 isAdmin: false
 
-            })
+            }).save()
         }
-        user.save()
+
         const { accessToken, refreshToken } = generateTokens(user._id)
         res.cookie('accessToken', accessToken, {
             httpOnly: true,

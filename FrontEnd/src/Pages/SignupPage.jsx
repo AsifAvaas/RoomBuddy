@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Eye, EyeOff, CheckCircle, AlertCircle } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -124,7 +126,41 @@ export default function SignupPage() {
       setLoading(false);
     }
   };
+  const googleLogin = async (userData) => {
+    setLoading(true);
+    setError("");
+    setSuccess("");
+    try {
+      const response = await axios.post(
+        `${backendurl}/api/google/login`,
+        {
+          name: userData.name,
+          email: userData.email,
+          profilePic: userData.picture,
+        },
+        { withCredentials: true }
+      );
+      const data = response.data;
+      if (data.success) {
+        login(data.isAdmin);
 
+        setSuccess("Login successful! Redirecting...");
+        setTimeout(() => {
+          if (data.isAdmin) {
+            navigate("/admin-dashboard");
+          } else {
+            navigate("/");
+          }
+        }, 1000);
+      } else {
+        setError(data.error || "Login failed. Please try again.");
+      }
+    } catch (error) {
+      setError("Network error. Please check your connection.");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
       <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
@@ -268,7 +304,19 @@ export default function SignupPage() {
               </button>
             </div>
           </div>
+          <div>
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                let userData = jwtDecode(credentialResponse.credential);
 
+                console.log(userData);
+                googleLogin(userData);
+              }}
+              onError={() => {
+                console.log("Login Failed");
+              }}
+            />
+          </div>
           <button
             type="button"
             onClick={handleSubmit}
