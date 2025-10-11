@@ -14,6 +14,7 @@ const TenantRentRoute = require('./routes/TenantRentRoute')
 const RentRoute = require('./routes/RentRoute')
 const ProfileRoute = require('./routes/ProfileRoute')
 const DashboardRoute = require('./routes/DashboardRouter')
+require('./utils/rentReminder')
 
 
 

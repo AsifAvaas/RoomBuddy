@@ -8,6 +8,7 @@ const cloudinary = require('../utils/cloudinary');
 const upload = require('../utils/multer');
 
 
+// Create a new room by admin
 router.post('/addRoom', authMiddleware, adminMiddleware, upload.array('images', 5), async (req, res) => {
     try {
         const { roomNumber, floor, occupancy_type, rent } = req.body;
@@ -61,6 +62,7 @@ router.post('/addRoom', authMiddleware, adminMiddleware, upload.array('images', 
 });
 
 
+// see all rooms
 router.get('/getAllRooms', authMiddleware, async (req, res) => {
     try {
         const rooms = await Room.find()
@@ -71,6 +73,7 @@ router.get('/getAllRooms', authMiddleware, async (req, res) => {
     }
 })
 
+// Only see the available rooms
 router.get('/getAvailableRooms', async (req, res) => {
     try {
         const availableRooms = await Room.find({ available_slots: { $gt: 0 } });
@@ -80,7 +83,7 @@ router.get('/getAvailableRooms', async (req, res) => {
     }
 });
 
-
+// Room edit by admin
 router.put('/editRoom/:id', authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const { available_slots, capacity } = req.body;
@@ -120,6 +123,7 @@ router.delete('/deleteRoom/:id', authMiddleware, adminMiddleware, async (req, re
     }
 });
 
+// Get the list of all the tenants past and present of a room
 router.get('/:roomId/tenants', async (req, res) => {
     try {
         const { roomId } = req.params;
@@ -137,6 +141,8 @@ router.get('/:roomId/tenants', async (req, res) => {
     }
 });
 
+
+// Get the details of a specific room
 router.get('/room/:roomId', async (req, res) => {
     try {
         const { roomId } = req.params;

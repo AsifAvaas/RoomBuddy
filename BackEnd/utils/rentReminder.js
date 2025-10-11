@@ -15,7 +15,7 @@ cron.schedule('0 0 * * *', async () => {
 
         // Get all active tenants
         const tenants = await Tenant.find({ isActive: true }).populate('userId roomId');
-
+        // console.log(tenants)
         for (const tenant of tenants) {
             const rentRecord = await Rent.findOne({
                 tenantId: tenant._id,
@@ -47,6 +47,7 @@ cron.schedule('0 0 * * *', async () => {
                     `💰 Rent Due - Room ${tenant.roomId.roomNumber}`,
                     html
                 );
+                // console.log("sent mail to ", tenant.userId.email)
                 continue;
             }
 
@@ -62,6 +63,7 @@ cron.schedule('0 0 * * *', async () => {
                         `Please complete your payment before the <strong>10th</strong> to avoid late fees.`
                     );
                     await sendMail(tenant.userId.email, '🏠 Rent Reminder', html);
+                    // console.log("Sent mail to ", tenant.userId.email)
                 }
 
                 else if (day === 10) {
@@ -72,6 +74,7 @@ cron.schedule('0 0 * * *', async () => {
                         `⚠️ This is your final warning. Please clear your dues immediately to avoid eviction by the <strong>15th</strong>.`
                     );
                     await sendMail(tenant.userId.email, '⚠️ Rent Payment Warning', html);
+                    // console.log("sent mail to for pending",)
                 }
 
                 else if (day === 15) {
@@ -106,4 +109,6 @@ cron.schedule('0 0 * * *', async () => {
     } catch (err) {
         console.error('Error in rent reminder job:', err);
     }
+}, {
+    timezone: 'Asia/Dhaka'
 });

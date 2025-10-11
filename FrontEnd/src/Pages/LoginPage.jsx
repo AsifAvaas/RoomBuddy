@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { Eye, EyeOff, CheckCircle, AlertCircle } from "lucide-react";
 import axios from "axios";
 import { AuthContext } from "../Components/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 
@@ -193,6 +193,11 @@ export default function LoginPage() {
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
+          </div>
+          <div>
+            <Link className="linktoggle" to="/forgotPassword">
+              Forgot Password? Click Here
+            </Link>
           </div>
           <div>
             <GoogleLogin

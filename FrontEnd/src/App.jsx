@@ -16,6 +16,8 @@ import PaymentCancel from "./Pages/Users/PaymentCancel";
 import Profile from "./Pages/Profile";
 import Roomdetails from "./Pages/Users/Roomdetails";
 import UnavailablePage from "./Pages/UnavailablePage";
+import ResetPassword from "./Pages/ResetPassword";
+import ForgotPassword from "./Pages/ForgotPassword";
 function App() {
   return (
     <>
@@ -35,6 +37,8 @@ function App() {
         <Route path="/payment-cancel" element={<PaymentCancel />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/roomdetails/:id" element={<Roomdetails />} />
+        <Route exact path="/resetPassword" element={<ResetPassword />} />
+        <Route exact path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="*" element={<UnavailablePage />} />
       </Routes>
     </>

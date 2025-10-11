@@ -10,6 +10,8 @@ const sendMail = require('../utils/sendMail')
 const UserModel = require('../models/UserModel')
 const roomCancalationTemplate = require('../utils/emailtemplates/roomCancellationTemplate')
 
+
+// Get All the tenant details (Only for admin)
 router.get('/tenantDetails', authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const tenants = await Tenant.find().populate('userId roomId')
@@ -24,6 +26,7 @@ router.get('/tenantDetails', authMiddleware, adminMiddleware, async (req, res) =
     }
 })
 
+// Get Tenant detail by ID (Only for admin)
 router.get('/tenantDetails/:id', authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const userId = req.params.id
@@ -39,7 +42,7 @@ router.get('/tenantDetails/:id', authMiddleware, adminMiddleware, async (req, re
     }
 })
 
-
+// Add a new tenant in the database, when a user bookes a room
 router.post('/addTenant', authMiddleware, async (req, res) => {
     try {
         const { roomId, bedNo, move_in_date } = req.body;
@@ -129,6 +132,8 @@ router.post('/addTenant', authMiddleware, async (req, res) => {
     }
 });
 
+
+// When a tenant leaves a room
 router.put('/cancelSubscription/:id', authMiddleware, async (req, res) => {
     try {
         const tenantId = req.params.id;

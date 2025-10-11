@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken')
 const User = require("../models/UserModel")
 const Token = require("../models/TokenModel")
 const { body, validationResult } = require('express-validator');
@@ -10,8 +11,9 @@ const sendEmail = require("../utils/sendMail")
 const isProduction = process.env.NODE_ENV === 'production'
 const verifyEmailTemplate = require('../utils/emailtemplates/verifyEmailTemplate');
 const generateTokens = require('../utils/generateTokens');
+const resetPasswordTemplate = require('../utils/emailtemplates/ResetPasswordTemplate');
 const frontend = process.env.Frontend_url
-
+const jwtSecret = process.env.JWT_SECRET
 
 
 
@@ -132,6 +134,7 @@ router.post('/login', async (req, res) => {
 })
 
 
+//Google Oauth Login
 router.post('/google/login', async (req, res) => {
     const { name, email, profilePic } = req.body
     try {
@@ -192,7 +195,7 @@ router.post('/logout', async (req, res) => {
 
 })
 
-
+// Email varification route
 router.get("/:id/verify/:token", async (req, res) => {
     try {
         const user = await User.findOne({ _id: req.params.id })
@@ -216,6 +219,84 @@ router.get("/:id/verify/:token", async (req, res) => {
     }
 })
 
+router.post('/forgot-password', async (req, res) => {
+    const { email } = req.body
+    try {
+        console.log(email)
+        const user = await User.findOne({ email })
+        if (!user) {
+            return res.json({ success: false, error: "User does not exist" })
+        }
+        const secret = jwtSecret + user.password
+        const token = jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: "10m" })
+
+        const link = `${backend_url}/api/reset-password/${user._id}/${token}`
+
+        await sendEmail(
+            user.email,
+            "Password Reset Request",
+            resetPasswordTemplate(link)
+        );
+        res.json({ success: true });
+
+    } catch (error) {
+        return res.json({ error: error.message })
+    }
+})
+
+router.get('/reset-password/:id/:token', async (req, res) => {
+    const { id, token } = req.params
+    const user = await User.findById(id)
+    if (!user) {
+        return res.json({ success: false, error: "User does not exist" })
+    }
+    const secret = jwtSecret + user.password
+    try {
+        const verify = jwt.verify(token, secret)
+        if (verify) {
+            const email = user.email;
+
+            res.redirect(`${frontend}/resetPassword?id=${id}&email=${email}`);
+        } else {
+            return res.json({ success: false, error: "Invalid token" });
+        }
+    } catch (error) {
+        return res.json({ success: false, error: "User does not exist" })
+    }
+
+})
+
+// Reset password update route
+router.put('/password/reset', body('password', 'Password must contain minimum of 8 letters, including 1 uppuercase, 1 lowercase, 1 number and 1 spacial symbol.').isStrongPassword({
+    minLength: 8,
+    minLowercase: 1,
+    minNumbers: 1,
+    minUppercase: 1,
+    minSymbols: 1,
+}), async (req, res) => {
+
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+        return res.json({ errorMessage: result.array() });
+    }
+
+    const { id, password } = req.body
+    const user = await User.findById(id)
+    if (!user) {
+        return res.json({ error: "User does not exist" })
+    }
+    try {
+        const salt = await bcrypt.genSalt(10);
+        const securepassword = await bcrypt.hash(password, salt);
+
+        user.password = securepassword
+        await user.save()
+        return res.json({ success: true, message: 'Password updated successfully' })
+    } catch (error) {
+        return res.json({ error: 'An error occurred while updating the password' })
+    }
+
+})
 
 
 module.exports = router

@@ -8,6 +8,7 @@ const Rent = require('../models/RentModel')
 const Stripe = require('stripe');
 const stripe = new Stripe(process.env.Stripe_Secret);
 
+// Shows all the bills of the rent
 router.get('/rentDetails', authMiddleware, async (req, res) => {
     try {
         const userId = req.user.id;
@@ -49,22 +50,21 @@ router.get('/rentDetails', authMiddleware, async (req, res) => {
     }
 });
 
-
+// List of pending rents for a user
 router.get('/myPendingRents', authMiddleware, async (req, res) => {
     try {
         const userId = req.user.id;
 
-        // Get all tenant entries for this user
         const tenants = await Tenant.find({ userId });
 
         if (!tenants.length) {
             return res.status(404).json({ success: false, message: 'Tenant not found' });
         }
 
-        // Extract tenant IDs
+
         const tenantIds = tenants.map(t => t._id);
 
-        // Find all pending rents for these tenants and populate room details
+
         const pendingRents = await Rent.find({
             tenantId: { $in: tenantIds },
             status: 'pending'
@@ -72,7 +72,7 @@ router.get('/myPendingRents', authMiddleware, async (req, res) => {
             .populate({
                 path: 'tenantId',
                 populate: {
-                    path: 'roomId', // This will populate the room info from the Tenant model
+                    path: 'roomId',
                     model: 'rooms',
                 },
             })
@@ -107,12 +107,11 @@ router.get('/pendingRents', authMiddleware, adminMiddleware, async (req, res) =>
     }
 });
 
-
+// admin route for manually mark a rent bill as paid
 router.put('/markRentPaid/:id', authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const rentId = req.params.id;
 
-        // Find the rent record
         const rent = await Rent.findById(rentId);
         if (!rent) {
             return res.status(404).json({ success: false, message: "Rent record not found" });
@@ -142,6 +141,7 @@ router.put('/markRentPaid/:id', authMiddleware, adminMiddleware, async (req, res
     }
 });
 
+// online payment route with stripe
 router.put('/onlinePayment/:id', authMiddleware, async (req, res) => {
     try {
         const rentId = req.params.id;
@@ -199,7 +199,7 @@ router.put('/onlinePayment/:id', authMiddleware, async (req, res) => {
     }
 });
 
-
+// stripe webhook route
 router.post('/stripe-webhook', express.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
 
@@ -225,10 +225,11 @@ router.post('/stripe-webhook', express.raw({ type: 'application/json' }), async 
     }
 });
 
+// payment verification route to update the payment status
 
 router.get('/verifyPayment', authMiddleware, async (req, res) => {
     try {
-        const { session_id, rentId } = req.query; // pass rentId along with session_id
+        const { session_id, rentId } = req.query;
 
         if (!session_id || !rentId) {
             return res.status(400).json({ success: false, message: 'Missing session_id or rentId' });

@@ -327,7 +327,7 @@ function Roomdetails() {
                     Book Room {selectedRoom.roomNumber}
                   </h3>
                   <p className="text-indigo-100 text-sm mt-1">
-                    Floor {selectedRoom.floor} • ₹{selectedRoom.rent}/month
+                    Floor {selectedRoom.floor} • ${selectedRoom.rent}/month
                   </p>
                 </div>
                 <button

@@ -8,7 +8,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
 const RentModel = require('../models/RentModel');
 
-// 🧭 Dashboard Summary
+//  Dashboard Summary
 router.get('/summary', authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const totalRooms = await Room.countDocuments();
@@ -145,3 +145,9 @@ router.get('/recent-tenants', async (req, res) => {
     }
 });
 module.exports = router;
+
+/*
+This is a repository for a paying guest website named RoomBuddy, there are two directiry in this repo named frontend and backend, read my repo and write me a readme.md file, the readme should show,Table of Contents,overview,Features, Tech Stack,Project Structure,Installation, API Endpoints and the author detail, the main feature of m project is as following
+the user can login signup , there is oiptins for google auth, forgot password, then he can brouse rooms and book a room for monthly rent, each month he will get a mail notification saying his rent is due, he can pay it with cash or with integrated payment system with stripe, he can also cancel his rooms and al;so edit his user profile and see his rent history,
+the admin will have a dashbiard showin ll the rent info and tenants, he can add edit delete rooms, evict tenatns,see tenants details etc, now write me a reaadme file
+*/
