@@ -227,7 +227,7 @@ router.post('/stripe-webhook', express.raw({ type: 'application/json' }), async 
 
 // payment verification route to update the payment status
 
-router.get('/verifyPayment', authMiddleware, async (req, res) => {
+router.get('/verifyPayment', async (req, res) => {
     try {
         const { session_id, rentId } = req.query;
 
